@@ -1,6 +1,6 @@
 import { Task } from '../entities';
 
-export interface TaskPaginator {
+export interface TaskPaginated {
     tasks: Task[],
     total: number
 }

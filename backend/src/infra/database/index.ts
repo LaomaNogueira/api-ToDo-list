@@ -1,13 +1,14 @@
-// import 'reflect-metadata';
-// import {
-//   Connection,
-//   createConnection,
-//   EntityTarget,
-//   getConnectionManager,
-// } from 'typeorm';
+import 'reflect-metadata';
+import {
+  Connection,
+  createConnection,
+  getConnectionManager,
+} from 'typeorm';
+
+createConnection();
 
 // export class TypeOrmHelper {
-
+    
 //   static async getDomainConnection() {
 //     return this.getConnection("to_do_list");
 //   }

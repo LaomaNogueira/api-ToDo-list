@@ -1,13 +1,11 @@
 import { TaskModel } from '../../../domain/models';
-import {
-  TaskRepository
-} from '../../../infra/typeorm/domain/repositories/taskRepository';
+import { TaskRepository } from '../../../infra/typeorm/domain/repositories/taskRepository';
 import {
   CreateTaskDTO,
   UpdateTaskDTO,
 } from './taskServiceProtocols';
-import { EnumServiceError } from './enumServiceError';
-//import { TaskPaginator } from '../../../infra/typeorm/domain/repositories';
+import { EnumServiceError } from '../enumServiceError';
+import { TaskPaginated } from '../../../infra/typeorm/domain/repositories';
 import Joi from 'joi';
 import { validateSchema } from '../../helpers/validateSchema';
 
@@ -16,19 +14,18 @@ class TaskService {
   static async create(
     taskDTO: CreateTaskDTO,
   ): Promise<TaskModel> {
-    console.log('service 1')
-    // const taskSchema = Joi.object({
-    //   title: Joi.string().required(),
-    //   endDate: Joi.required(),
-    //   category: Joi.string().required(),
-    //   done: Joi.boolean(),
-    //   userId: Joi.string().required().guid({
-    //     version: ['uuidv4']
-    //   })
-    // });
+    const taskSchema = Joi.object({
+      title: Joi.string().required(),
+      endDate: Joi.required(),
+      category: Joi.string().required(),
+      done: Joi.boolean(),
+      userId: Joi.string().required().guid({
+        version: ['uuidv4']
+      })
+    });
 
-    // validateSchema(taskSchema, taskDTO);
-    console.log('service 2')
+    validateSchema(taskSchema, taskDTO);
+    
     const createdTask = await TaskRepository
       .create({
         ...taskDTO,
@@ -39,29 +36,30 @@ class TaskService {
     return createdTask;
   }
 
-  // static async findById(healthcareProfessionalId: string, hospitalId: string): Promise<TaskModel> {
-  //   const healthcareProfessionalFound = await TaskRepository
-  //     .findById(healthcareProfessionalId, hospitalId)
-  //     .catch(() => {
-  //       throw new Error(EnumServiceError.NOT_FOUND);
-  //     });
+  static async findAll(perPage: number, page?: number): Promise<TaskPaginated> {
 
-  //   if (!healthcareProfessionalFound) {
-  //     throw new Error(EnumServiceError.NOT_FOUND);
-  //   }
+    const task = await TaskRepository
+      .findAll(perPage, page)
+      .catch(() => {
+        throw new Error(EnumServiceError.NOT_FOUND);
+      });
 
-  //   return healthcareProfessionalFound;
-  // }
+    return task;
+  }
 
-  // static async findAllByHospitalId(hospitalId: string, page?: number): Promise<TaskPaginator> {
-  //   const healthcareProfessional = await TaskRepository
-  //     .findAllByHospitalId(hospitalId, page)
-  //     .catch(() => {
-  //       throw new Error(EnumServiceError.NOT_FOUND);
-  //     });
+  static async findById(taskId: string): Promise<TaskModel> {
+    const taskFound = await TaskRepository
+      .findById(taskId)
+      .catch(() => {
+        throw new Error(EnumServiceError.NOT_FOUND);
+      });
 
-  //   return healthcareProfessional;
-  // }
+    if (!taskFound) {
+      throw new Error(EnumServiceError.NOT_FOUND);
+    }
+
+    return taskFound;
+  }
 
   // static async updateById(
   //   updateTaskDTO: UpdateTaskDTO
@@ -71,34 +69,21 @@ class TaskService {
   //   delete updateTaskDTO.id;
   //   delete updateTaskDTO.hospitalId;
 
-  //   const healthcareProfessionalSchema = Joi.object({
+  //   const taskSchema = Joi.object({
   //     fullname: Joi.string(),
   //     phoneNumber: Joi.string().regex(/^\d{10,11}$/)
   //   });
 
-  //   validateSchema(healthcareProfessionalSchema, updateTaskDTO);
-
-  //   await this.findById(id, hospitalId);
-  //   const updatedTask = await TaskRepository
-  //     .updateById(id, {
-  //       ...updateTaskDTO,
-  //     }).catch(() => {
-  //       throw new Error(EnumServiceError.NOT_UPDATED);
-  //     });
-
-  //   return updatedTask;
-  // }
-
-  // static async deleteById(healthcareProfessionalId: string, hospitalId: string): Promise<TaskModel> {
-  //   const healthcareProfessionalToDelete = await this.findById(healthcareProfessionalId, hospitalId);
+  // static async deleteById(taskId: string, hospitalId: string): Promise<TaskModel> {
+  //   const taskToDelete = await this.findById(taskId, hospitalId);
 
   //   await TaskRepository
-  //     .deleteById(healthcareProfessionalId)
+  //     .deleteById(taskId)
   //     .catch(() => {
   //       throw new Error(EnumServiceError.NOT_DELETED);
   //     });
 
-  //   return healthcareProfessionalToDelete;
+  //   return taskToDelete;
   // }
 }
 

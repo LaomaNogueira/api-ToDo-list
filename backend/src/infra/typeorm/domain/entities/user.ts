@@ -24,22 +24,20 @@ export class User implements UserModel {
   @Column({ nullable: false })
   password: string;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp without time zone' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
     default: null,
-    nullable: true,
-    type: 'timestamp without time zone',
+    nullable: true
   })
   updatedAt: Date;
 
   @DeleteDateColumn({
     name: 'deleted_at',
     default: null,
-    nullable: true,
-    type: 'timestamp without time zone',
+    nullable: true
   })
   deletedAt: Date;
 }

@@ -1,5 +1,5 @@
 import express from 'express';
-//import { setupMiddlewares } from './';
+import { setupMiddlewares } from './';
 import { setupRoutes } from './';
 // import { datePrototypeConfig } from './';
 import { config } from 'dotenv';
@@ -9,7 +9,7 @@ config();
 
 const app = express();
 
-//setupMiddlewares(app);
+setupMiddlewares(app);
 
 setupRoutes(app);
 

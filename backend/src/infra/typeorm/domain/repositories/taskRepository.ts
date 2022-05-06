@@ -1,52 +1,45 @@
 import { Task } from '../entities';
-import { TypeORM } from '../../typeORMConfig';
-import { TaskPaginator } from './taskRepositoryProtocols';
+import { getConnection } from 'typeorm';
+import { TaskPaginated, nextPage } from '.';
 
 class TaskRepository {
 
   static async create(
     taskDTO: Partial<Omit<Task, 'id'>>
   ): Promise<Task> {
-    console.log('REPOSITORY');
-    const connection = await TypeORM.getDomainConnection();
-    console.log(connection);
+    const connection = getConnection();
     const result = await connection.getRepository(Task).save(taskDTO);
     return result;
   }
 
-  // static async findById(taskId: string, hospitalId: string): Promise<Task> {
-  //   const connection = await TypeORM.getDomainConnection();
-  //   const result = await connection.getRepository(Task).findOne({
-  //     where: {
-  //       id: taskId,
-  //       hospitalId: hospitalId
-  //     }
-  //   });
-  //   return result;
-  // }
+  static async findAll(perPage: number, page?: number): Promise<TaskPaginated> {
+    const skip = nextPage(perPage, page)
+    const connection = getConnection();
+    const result = await connection.getRepository(Task).findAndCount({
+        skip: skip,
+        take: perPage
+    });
 
-  // static async findAllByHospitalId(hospitalId: string, page?: number): Promise<TaskPaginator> {
-  //   const maxPerPage = 25;
-  //   const skip = page ? maxPerPage * page : 0;
+    const parsedResult = { tasks: result[0], total: result[1] };
 
-  //   const connection = await TypeORM.getDomainConnection();
-  //   const result = await connection.getRepository(Task).findAndCount({
-  //     where: { hospitalId: hospitalId },
-  //     skip: skip,
-  //     take: maxPerPage
-  //   });
+    return parsedResult;
+  }
 
-  //   const parsedResult = { tasks: result[0], total: result[1] };
-
-  //   return parsedResult;
-  // }
+  static async findById(taskId: string): Promise<Task> {
+    const connection = getConnection();
+    const result = await connection.getRepository(Task).findOne({
+        where: { id: taskId }
+    });
+    
+    return result;
+}
 
   // static async updateById(
   //   taskId: string, 
   //   attributes: Partial<Omit<Task, 'id' | 'hospitalId'>>
   // ): Promise<Task> {
 
-  //   const connection = await TypeORM.getDomainConnection();
+  //   const connection = await TypeOrmHelper.getDomainConnection();
   //   const result = await connection.getRepository(Task).update(
   //     { id: taskId }, 
   //     { ...attributes }
@@ -58,7 +51,7 @@ class TaskRepository {
   // }
 
   // static async deleteById(taskId: string): Promise<void> {
-  //   const connection = await TypeORM.getDomainConnection();
+  //   const connection = await TypeOrmHelper.getDomainConnection();
   //   await connection.getRepository(Task).delete({ id: taskId });
   // }
 }

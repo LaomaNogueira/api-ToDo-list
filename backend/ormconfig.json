@@ -1,0 +1,7 @@
+{
+    "type": "sqlite",
+    "database": "./src/infra/database/database.sqlite",
+    "entities": ["./src/infra/typeorm/domain/entities/**.ts"],
+    "synchronize": true,
+    "logging": true
+}

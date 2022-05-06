@@ -14,10 +14,10 @@ class TaskController {
   static async create(request: Request, response: Response): Promise<Response> {
     try {
       const body = request.body;
-
-      // verifyRequiredFields(['title', 'endDate', 'category', 'userId'], body);
-      console.log("controller")
-      const taskCreated = await TaskService.create({...body})
+    
+      verifyRequiredFields(['title', 'endDate', 'category', 'userId'], body);
+      
+      const taskCreated = await TaskService.create({ ...body })
       .catch((error) => {
         throw new StatusError(400, error);
       });
@@ -25,6 +25,41 @@ class TaskController {
       return response.status(200).send(taskCreated);
     } catch (error: any) {
       errorHandlerFactory(error, 'create');
+      return response.status(error.status).send(error);
+    }
+  }
+
+  static async findAll(request: Request, response: Response): Promise<Response> {
+    try {
+      const { perPage, page } = request.query;
+
+      const tasks = await TaskService
+        .findAll(Number(perPage), Number(page))
+        .catch((error: any) => {
+          throw new StatusError(400, error);
+        });
+
+      return response.status(200).send(tasks);
+    } catch (error: any) {
+      errorHandlerFactory(error, 'findAll');
+      return response.status(error.status).send(error);
+    }
+  }
+
+  static async findById(request: Request, response: Response): Promise<any> {
+    try {
+      const { taskId } = request.params;
+
+      const task = await TaskService
+        .findById(taskId)
+        .catch((error) => {
+          throw new StatusError(400, error);
+        });
+
+      return response.status(200).send(task);
+
+    } catch (error: any) {
+      errorHandlerFactory(error, 'findById');
       return response.status(error.status).send(error);
     }
   }

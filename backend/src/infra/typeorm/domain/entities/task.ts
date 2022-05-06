@@ -39,22 +39,20 @@ export class Task implements TaskModel {
   @JoinColumn({ name: 'user_id' })
   user: string;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp without time zone' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
     default: null,
-    nullable: true,
-    type: 'timestamp without time zone',
+    nullable: true
   })
   updatedAt: Date;
 
   @DeleteDateColumn({
     name: 'deleted_at',
     default: null,
-    nullable: true,
-    type: 'timestamp without time zone',
+    nullable: true
   })
   deletedAt: Date;
 }
