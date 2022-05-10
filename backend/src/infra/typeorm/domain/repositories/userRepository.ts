@@ -35,6 +35,10 @@ class UserRepository {
         const skip = nextPage(perPage, page)
         const connection = getConnection();
         const result = await connection.getRepository(User).findAndCount({
+            order: {
+                name: "ASC",
+                createdAt: "DESC"
+            },
             skip: skip,
             take: perPage
         });
@@ -53,26 +57,26 @@ class UserRepository {
         return result;
     }
 
-    // static async updateById(
-    //     userId: string,
-    //     attributes: Partial<Omit<User, 'id' | 'hospitalId'>>
-    //     ): Promise<User> {
-
-    //     const connection = await TypeORM.getDomainConnection();
-    //     const result = await connection.getRepository(User).update(
-    //         { id: userId },
-    //         { ...attributes }
-    // ).then(async () => {
-    //     return connection.getRepository(User).findOne({ id: userId });
-    // });
-
-    // return result;
-    // }
-
-    // static async deleteById(userId: string): Promise<void> {
-    //     const connection = await TypeORM.getDomainConnection();
-    //     await connection.getRepository(User).delete({ id: userId });
-    // }
+    static async updateById(
+        userId: string, 
+        attributes: Partial<Omit<User, 'id' >>
+      ): Promise<User> {
+    
+        const connection = getConnection();
+        const result = await connection.getRepository(User).update(
+          { id: userId }, 
+          { ...attributes }
+        ).then(async () => {
+          return connection.getRepository(User).findOne({ id: userId });
+        });
+        
+        return result;
+      }
+    
+    static async deleteById(userId: string): Promise<void> {
+        const connection = getConnection();
+        await connection.getRepository(User).delete({ id: userId });
+    }
 }
 
 export { UserRepository };

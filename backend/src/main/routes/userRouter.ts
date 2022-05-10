@@ -9,7 +9,7 @@ userRouter.route('/')
 
 userRouter.route('/:userId')
   .get(UserController.findById)
-//   .put(UserController.updateById)
-//   .delete(UserController.deleteById);
+  .put(UserController.updateById)
+  .delete(UserController.deleteById);
 
 export { userRouter };

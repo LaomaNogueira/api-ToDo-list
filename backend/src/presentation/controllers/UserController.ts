@@ -21,7 +21,7 @@ class UserController {
         throw new StatusError(400, error);
       });
 
-      return response.status(200).send(userCreated);
+      return response.status(201).send(userCreated);
     } catch (error: any) {
       errorHandlerFactory(error, 'create');
       return response.status(error.status).send(error);
@@ -31,8 +31,7 @@ class UserController {
   static async findAll(request: Request, response: Response): Promise<Response> {
     try {
       const { perPage, page } = request.query;
-      const users = await UserService
-        .findAll(Number(perPage), Number(page))
+      const users = await UserService.findAll(Number(perPage), Number(page))
         .catch((error: any) => {
           throw new StatusError(400, error);
         });
@@ -44,15 +43,13 @@ class UserController {
     }
   }
 
-  static async findById(request: Request, response: Response): Promise<any> {
+  static async findById(request: Request, response: Response): Promise<Response> {
     try {
       const { userId } = request.params;
 
-      const user = await UserService
-        .findById(userId)
-        .catch((error) => {
-          throw new StatusError(400, error);
-        });
+      const user = await UserService.findById(userId).catch((error) => {
+        throw new StatusError(404, error);
+      });
 
       return response.status(200).send(user);
 
@@ -62,45 +59,38 @@ class UserController {
     }
   }
 
-  // static async updateById(request: Request, response: Response): Promise<Response> {
-  //   try {
-  //     const hospitalId = request.headers['hospitalid'] as string;
-  //     const { userId } = request.params;
-  //     const body = request.body;
+  static async updateById(request: Request, response: Response): Promise<Response> {
+    try {
+      const { userId } = request.params;
+      const body = request.body;
 
-  //     const userUpdated = await UserService
-  //       .updateById({
-  //         ...body,
-  //         id: userId,
-  //         hospitalId: hospitalId
-  //       }).catch((error) => {
-  //         throw new StatusError(400, error);
-  //       });
+      const userUpdated = await UserService.updateById({ ...body, id: userId })
+        .catch((error) => {
+          throw new StatusError(400, error);
+        });
 
-  //     return response.status(200).send(userUpdated);
-  //   } catch (error: any) {
-  //     errorHandlerFactory(error, 'updateById');
-  //     return response.status(error.status).send(error);
-  //   }
-  // }
+      return response.status(200).send(userUpdated);
+    } catch (error: any) {
+      errorHandlerFactory(error, 'updateById');
+      return response.status(error.status).send(error);
+    }
+  }
 
-  // static async deleteById(request: Request, response: Response): Promise<Response> {
-  //   try {
-  //     const hospitalId = request.headers['hospitalid'] as string;
-  //     const { userId } = request.params;
+  static async deleteById(request: Request, response: Response): Promise<Response> {
+    try {
+      const { userId } = request.params;
 
-  //     const deletedUserId = await UserService
-  //       .deleteById(userId, hospitalId)
-  //       .catch((error) => {
-  //         throw new StatusError(400, error);
-  //       });
+      const deletedUserId = await UserService.deleteById(userId)
+        .catch((error) => {
+          throw new StatusError(400, error);
+        });
 
-  //     return response.status(200).send({ message: 'deleted', user: deletedUserId });
-  //   } catch (error: any) {
-  //     errorHandlerFactory(error, 'deleteById');
-  //     return response.status(error.status).send(error);
-  //   }
-  // }
+      return response.status(200).send({ message: 'deleted', user: deletedUserId });
+    } catch (error: any) {
+      errorHandlerFactory(error, 'deleteById');
+      return response.status(error.status).send(error);
+    }
+  }
 }
 
 export { UserController };

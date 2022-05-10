@@ -22,38 +22,21 @@ class TaskController {
         throw new StatusError(400, error);
       });
 
-      return response.status(200).send(taskCreated);
+      return response.status(201).send(taskCreated);
     } catch (error: any) {
       errorHandlerFactory(error, 'create');
       return response.status(error.status).send(error);
     }
   }
 
-  static async findAll(request: Request, response: Response): Promise<Response> {
-    try {
-      const { perPage, page } = request.query;
-
-      const tasks = await TaskService
-        .findAll(Number(perPage), Number(page))
-        .catch((error: any) => {
-          throw new StatusError(400, error);
-        });
-
-      return response.status(200).send(tasks);
-    } catch (error: any) {
-      errorHandlerFactory(error, 'findAll');
-      return response.status(error.status).send(error);
-    }
-  }
-
-  static async findById(request: Request, response: Response): Promise<any> {
+  static async findById(request: Request, response: Response): Promise<Response> {
     try {
       const { taskId } = request.params;
 
       const task = await TaskService
         .findById(taskId)
         .catch((error) => {
-          throw new StatusError(400, error);
+          throw new StatusError(404, error);
         });
 
       return response.status(200).send(task);
@@ -64,24 +47,89 @@ class TaskController {
     }
   }
 
-  // static async buildReport(request: Request, response: Response): Promise<Response> {
-  //   try {
-  //     const hospitalId = request.headers['hospitalid'] as string;
-  //     const { query } = request;
+  static async findAllByUserId(request: Request, response: Response): Promise<Response> {
+    try {
+      const { userId } = request.params;
+      const { perPage, page } = request.query;
 
-      // const notificationNews = await NotificationNewsService
-      //   .buildReport(hospitalId, query)
-      //   .catch((error) => {
-      //     throw new StatusError(400, error);
-      //   });
+      const tasks = await TaskService.findAllByUserId(userId, Number(perPage), Number(page))
+        .catch((error) => {
+          throw new StatusError(400, error);
+        });
 
-      // return response.status(200).send(notificationNews);
+      return response.status(200).send(tasks);
 
-  //   } catch(error: any) {
-  //     errorHandlerFactory(error, 'buildReport');
-  //     return response.status(error.status).send(error);
-  //   }
-  // }
+    } catch (error: any) {
+      errorHandlerFactory(error, 'findAllByUserId');
+      return response.status(error.status).send(error);
+    }
+  }
+
+  static async updateById(request: Request, response: Response): Promise<Response> {
+    try {
+      const { taskId } = request.params;
+      const body = request.body;
+
+      const taskUpdated = await TaskService.updateById({ ...body, id: taskId })
+        .catch((error) => {
+          throw new StatusError(400, error);
+        });
+
+      return response.status(200).send(taskUpdated);
+    } catch (error: any) {
+      errorHandlerFactory(error, 'updateById');
+      return response.status(error.status).send(error);
+    }
+  }
+
+  static async deleteById(request: Request, response: Response): Promise<Response> {
+    try {
+      const { taskId } = request.params;
+
+      const deletedTaskId = await TaskService.deleteById(taskId)
+        .catch((error) => {
+          throw new StatusError(400, error);
+        });
+
+      return response.status(200).send({ message: 'deleted', user: deletedTaskId });
+    } catch (error: any) {
+      errorHandlerFactory(error, 'deleteById');
+      return response.status(error.status).send(error);
+    }
+  }
+
+  static async updateToDone(request: Request, response: Response): Promise<Response> {
+    try {
+      const { taskId } = request.params;
+
+      const taskUpdated = await TaskService.updateById({ id: taskId, done: true })
+        .catch((error) => {
+          throw new StatusError(400, error);
+        });
+      
+      return response.status(200).send(taskUpdated);
+    } catch (error: any) {
+      errorHandlerFactory(error, 'updateToDone');
+      return response.status(error.status).send(error);
+    }
+  }
+
+  static async findAllWithFilters(request: Request, response: Response): Promise<Response> {
+    try {
+      const { query } = request;          
+
+      const tasksFiltered = await TaskService.findAllWithFilters(query)
+        .catch((error) => {
+          throw new StatusError(400, error);
+        });
+
+      return response.status(200).send(tasksFiltered);
+      
+    } catch(error: any) {
+      errorHandlerFactory(error, 'findAllWithFilters');
+      return response.status(error.status).send(error);
+    }
+}
 }
 
 export { TaskController };

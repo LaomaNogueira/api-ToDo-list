@@ -1,11 +1,11 @@
 import express from 'express';
 import { setupMiddlewares } from './';
 import { setupRoutes } from './';
-// import { datePrototypeConfig } from './';
+import { datePrototypeConfig } from './';
 import { config } from 'dotenv';
 config();
 
-// datePrototypeConfig();
+datePrototypeConfig();
 
 const app = express();
 
