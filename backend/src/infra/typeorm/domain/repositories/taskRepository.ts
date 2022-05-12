@@ -74,18 +74,17 @@ class TaskRepository {
     } 
 
     if(term) {
-        query.andWhere('task.title = :title', { title: term })
-          .orWhere('task.category = :category', { category: term })
-          .orWhere('task.done = :done', { done: term })
+        query.andWhere('task.title like :title', { title: `%${term}%` })
+          .orWhere('task.category like :category', { category: `%${term}%` });
     }
 
     if(!term) {
         if (title) {
-            query.andWhere('task.title = :title', { title: title });
+            query.andWhere('task.title like :title', { title: `%${title}%` });
         }
 
         if (category) {
-            query.andWhere('task.category = :category', { category: category });
+            query.andWhere('task.category like :category', { category: `%${category}%` });
         }
 
         if (done) {

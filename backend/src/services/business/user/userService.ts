@@ -63,9 +63,8 @@ class UserService {
     delete updateUserDTO.id;
 
     const userSchema = Joi.object({
-      name: Joi.string().required(),
-      email: Joi.string().email({ minDomainSegments: 2 }).required(),
-      password: Joi.string().pattern(/^[a-zA-Z0-9]{3,15}$/).required()
+      email: Joi.string().email({ minDomainSegments: 2 }),
+      password: Joi.string().pattern(/^[a-zA-Z0-9]{3,15}$/)
     });
 
     validateSchema(userSchema, updateUserDTO);
